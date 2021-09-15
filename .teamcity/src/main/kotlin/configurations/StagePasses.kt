@@ -60,7 +60,7 @@ class StagePasses(model: CIBuildModel, stage: Stage, prevStage: Stage?, stagePro
         if (!stage.runsIndependent && prevStage != null) {
             dependency(RelativeId(stageTriggerId(model, prevStage))) {
                 snapshot {
-                    onDependencyFailure = FailureAction.ADD_PROBLEM
+                    onDependencyFailure = FailureAction.CANCEL
                 }
             }
         }
