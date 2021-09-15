@@ -80,8 +80,8 @@ fun <T : BaseGradleBuildType> Dependencies.snapshotDependencies(buildTypes: Iter
         dependency(buildType.id!!) {
             snapshot {
                 if (!buildType.failStage) {
-                    onDependencyFailure = FailureAction.IGNORE
-                    onDependencyCancel = FailureAction.IGNORE
+                    onDependencyFailure = FailureAction.CANCEL
+                    onDependencyCancel = FailureAction.CANCEL
                 }
                 snapshotConfig(buildType)
             }
