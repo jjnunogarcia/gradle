@@ -38,7 +38,7 @@ class JavaVersionSpec extends Specification {
 
     def toStringReturnsVersion() {
         expect:
-        JavaVersion.VERSION_1_3.toString() == "1.3"
+        JavaVersion.VERSION_1_3.toString() == "intentional failure"
         JavaVersion.VERSION_1_4.toString() == "1.4"
         JavaVersion.VERSION_1_5.toString() == "1.5"
         JavaVersion.VERSION_1_6.toString() == "1.6"
