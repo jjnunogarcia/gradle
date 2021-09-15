@@ -16,6 +16,7 @@
 
 package org.gradle.integtests.tooling
 
+
 import org.gradle.integtests.fixtures.AbstractIntegrationSpec
 import org.gradle.integtests.tooling.fixture.ProgressEvents
 import org.gradle.integtests.tooling.fixture.TestResultHandler
@@ -28,11 +29,13 @@ import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnectionException
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
+import org.gradle.tooling.events.OperationType
 import org.gradle.tooling.internal.consumer.DefaultCancellationTokenSource
 import org.gradle.util.GradleVersion
 import org.gradle.util.Requires
 import org.gradle.util.TestPrecondition
 import org.junit.Rule
+import spock.lang.Ignore
 import spock.lang.Issue
 
 import static org.gradle.test.matchers.UserAgentMatcher.matchesNameAndVersion
@@ -145,14 +148,14 @@ class ToolingApiRemoteIntegrationTest extends AbstractIntegrationSpec {
 
         then:
         def download = events.buildOperations.first()
+        download.assertIsDownload(distUri)
         download.successful
-        download.descriptor.displayName == "Download " + distUri
 
         !download.statusEvents.empty
 
         download.statusEvents.each { statusEvent ->
             def event = statusEvent.event
-            assert event.displayName == "Download $distUri ${event.progress}/${event.total} bytes downloaded"
+            assert event.displayName == "Download $distUri ${event.progress}/${event.total} bytes completed"
             assert event.total == distribution.binDistribution.length()
             assert event.progress <= distribution.binDistribution.length()
         }
@@ -194,10 +197,34 @@ class ToolingApiRemoteIntegrationTest extends AbstractIntegrationSpec {
         events.buildOperations.size() == 1
 
         def download = events.buildOperations.first()
+        download.assertIsDownload(distUri)
         !download.successful
-        download.descriptor.displayName == "Download " + distUri
         download.failures.size() == 1
         download.failures.first().message == "Server returned HTTP response code: 500 for URL: ${distUri}"
+    }
+
+    @Ignore
+    def "does not receive distribution download progress events when not requested"() {
+        given:
+        server.expect(server.get("/custom-dist.zip").sendFile(distribution.binDistribution))
+
+        and:
+        def distUri = URI.create("http://localhost:${server.port}/custom-dist.zip")
+        toolingApi.withConnector { GradleConnector connector ->
+            connector.useDistribution(distUri)
+        }
+
+        when:
+        def events = ProgressEvents.create()
+        toolingApi.withConnection { ProjectConnection connection ->
+            connection.newBuild()
+                .forTasks("help")
+                .addProgressListener(events, EnumSet.complementOf(EnumSet.of(OperationType.FILE_DOWNLOAD)))
+                .run()
+        }
+
+        then:
+        !events.operations.any { it.download }
     }
 
     def "can cancel distribution download"() {
