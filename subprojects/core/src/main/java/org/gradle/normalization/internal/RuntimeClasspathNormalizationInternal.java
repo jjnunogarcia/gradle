@@ -20,12 +20,21 @@ import org.gradle.api.internal.changedetection.state.ResourceEntryFilter;
 import org.gradle.api.internal.changedetection.state.ResourceFilter;
 import org.gradle.normalization.RuntimeClasspathNormalization;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 public interface RuntimeClasspathNormalizationInternal extends RuntimeClasspathNormalization {
-     ResourceFilter getClasspathResourceFilter();
+    ResourceFilter getClasspathResourceFilter();
 
-     ResourceEntryFilter getManifestAttributeResourceEntryFilter();
+    ResourceEntryFilter getManifestAttributeResourceEntryFilter();
 
-     Map<String, ResourceEntryFilter> getPropertiesFileFilters();
+    Map<String, ResourceEntryFilter> getPropertiesFileFilters();
+
+    @Nullable
+    CachedState computeCachedState();
+
+    void configureFromCachedState(CachedState state);
+
+    interface CachedState {
+    }
 }
