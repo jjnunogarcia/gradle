@@ -61,6 +61,7 @@ class StagePasses(model: CIBuildModel, stage: Stage, prevStage: Stage?, stagePro
             dependency(RelativeId(stageTriggerId(model, prevStage))) {
                 snapshot {
                     onDependencyFailure = FailureAction.CANCEL
+                    onDependencyCancel = FailureAction.CANCEL
                 }
             }
         }
