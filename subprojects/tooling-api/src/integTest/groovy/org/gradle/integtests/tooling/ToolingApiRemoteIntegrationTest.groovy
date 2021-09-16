@@ -16,7 +16,6 @@
 
 package org.gradle.integtests.tooling
 
-
 import org.gradle.integtests.fixtures.AbstractIntegrationSpec
 import org.gradle.integtests.tooling.fixture.ProgressEvents
 import org.gradle.integtests.tooling.fixture.TestResultHandler
@@ -35,7 +34,6 @@ import org.gradle.util.GradleVersion
 import org.gradle.util.Requires
 import org.gradle.util.TestPrecondition
 import org.junit.Rule
-import spock.lang.Ignore
 import spock.lang.Issue
 
 import static org.gradle.test.matchers.UserAgentMatcher.matchesNameAndVersion
@@ -203,7 +201,6 @@ class ToolingApiRemoteIntegrationTest extends AbstractIntegrationSpec {
         download.failures.first().message == "Server returned HTTP response code: 500 for URL: ${distUri}"
     }
 
-    @Ignore
     def "does not receive distribution download progress events when not requested"() {
         given:
         server.expect(server.get("/custom-dist.zip").sendFile(distribution.binDistribution))

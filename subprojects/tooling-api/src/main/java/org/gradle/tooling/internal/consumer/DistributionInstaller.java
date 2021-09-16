@@ -62,8 +62,16 @@ public class DistributionInstaller {
 
     public DistributionInstaller(ProgressLoggerFactory progressLoggerFactory, InternalBuildProgressListener buildProgressListener, Clock clock) {
         this.progressLoggerFactory = progressLoggerFactory;
-        this.buildProgressListener = buildProgressListener;
+        this.buildProgressListener = getListener(buildProgressListener);
         this.clock = clock;
+    }
+
+    private InternalBuildProgressListener getListener(InternalBuildProgressListener buildProgressListener) {
+        if (buildProgressListener.getSubscribedOperations().contains(InternalBuildProgressListener.FILE_DOWNLOAD)) {
+            return buildProgressListener;
+        } else {
+            return NO_OP;
+        }
     }
 
     /**
