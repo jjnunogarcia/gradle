@@ -55,11 +55,13 @@ abstract class AbstractGradleBuildConfigurationCacheSmokeTest extends AbstractGr
             .assertTestClassesExecuted(testClass)
     }
 
+    protected boolean warnOnConfigurationCacheProblems = false
+
     void configurationCacheRun(List<String> tasks, int daemonId = 0) {
         run(
             tasks + [
                 "--${ConfigurationCacheOption.LONG_OPTION}".toString(),
-                "--${ConfigurationCacheProblemsOption.LONG_OPTION}=warn".toString(), // TODO:configuration-cache remove
+                "--${ConfigurationCacheProblemsOption.LONG_OPTION}=${warnOnConfigurationCacheProblems ? 'warn' : 'fail'}".toString(),
                 TEST_BUILD_TIMESTAMP
             ],
             // use a unique testKitDir per daemonId other than 0 as 0 means default daemon.
